@@ -1,10 +1,29 @@
 #include "frameprocessor.h"
 
+#include <opencv2/core/mat.hpp>
+#include <opencv2/imgproc.hpp>
+
 QImage FrameProcessor::matToQImage(const cv::Mat &frame)
 {
-    Q_UNUSED(frame)
+    if (frame.empty()) {
+        return QImage();
+    }
 
-    // TODO: implement cv::Mat -> QImage conversion
+    if (frame.channels() == 3) {
+        cv::Mat rgb;
+        cv::cvtColor(frame, rgb, cv::COLOR_BGR2RGB);
+        return QImage(rgb.data, rgb.cols, rgb.rows, static_cast<int>(rgb.step), QImage::Format_RGB888).copy();
+    }
+
+    if (frame.channels() == 1) {
+        return QImage(frame.data,
+                      frame.cols,
+                      frame.rows,
+                      static_cast<int>(frame.step),
+                      QImage::Format_Grayscale8)
+            .copy();
+    }
+
     return QImage();
 }
 

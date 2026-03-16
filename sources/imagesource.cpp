@@ -1,5 +1,7 @@
 #include "imagesource.h"
 
+#include <opencv2/imgcodecs.hpp>
+
 bool ImageSource::open(const QString &source)
 {
     imagePath = source;
@@ -9,10 +11,13 @@ bool ImageSource::open(const QString &source)
 
 bool ImageSource::read(cv::Mat &frame)
 {
-    Q_UNUSED(frame)
+    if (!opened) {
+        return false;
+    }
 
-    // TODO: implement real image frame loading here
-    return false;
+    frame = cv::imread(imagePath.toStdString());
+    opened = false;
+    return !frame.empty();
 }
 
 void ImageSource::close()

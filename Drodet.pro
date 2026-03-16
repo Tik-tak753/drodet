@@ -13,7 +13,9 @@ SOURCES += \
     detection/yolodetector.cpp \
     main.cpp \
     mainwindow.cpp \
-    sources/imagesource.cpp
+    sources/imagesource.cpp \
+    sources/videofilesource.cpp \
+    utils/frameprocessor.cpp
 
 HEADERS += \
     controller/detectioncontroller.h \
@@ -22,10 +24,16 @@ HEADERS += \
     mainwindow.h \
     sources/iframesource.h \
     sources/imagesource.h \
+    sources/videofilesource.h \
     utils/frameprocessor.h
 
 FORMS += \
     mainwindow.ui
+
+unix:!macx {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += opencv4
+}
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
