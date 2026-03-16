@@ -1,5 +1,6 @@
 #include "detectioncontroller.h"
 
+#include "sources/iframesource.h"
 #include "sources/imagesource.h"
 
 DetectionController::DetectionController(QObject *parent)
@@ -7,6 +8,8 @@ DetectionController::DetectionController(QObject *parent)
 {
     emit statusChanged(QStringLiteral("Controller initialized"));
 }
+
+DetectionController::~DetectionController() = default;
 
 void DetectionController::loadModel(const QString &path)
 {
