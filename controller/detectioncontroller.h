@@ -4,11 +4,16 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <QString>
+#include <QTimer>
 
 #include "detection/yolodetector.h"
 
 class IFrameSource;
 class QImage;
+
+namespace cv {
+class Mat;
+}
 
 class DetectionController : public QObject
 {
@@ -21,6 +26,8 @@ public:
 public slots:
     void loadModel(const QString &path);
     void openImage(const QString &path);
+    void openVideo(const QString &path);
+    void start();
     void stop();
 
 signals:
@@ -28,9 +35,15 @@ signals:
     void statsReady(double fps, int detections);
     void statusChanged(const QString &status);
 
+private slots:
+    void processNextFrame();
+
 private:
     YoloDetector detector;
     QScopedPointer<IFrameSource> frameSource;
+    QTimer previewTimer;
+    int processedFrames = 0;
+    qint64 startedAtMs = 0;
 };
 
 #endif // DETECTIONCONTROLLER_H

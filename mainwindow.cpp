@@ -50,7 +50,8 @@ void MainWindow::onOpenImageClicked()
     }
 
     ui->sourceValueLabel->setText(QStringLiteral("Image: %1").arg(filePath));
-    ui->framePlaceholderLabel->setText(QStringLiteral("Image selected. Press Start to run pipeline stub."));
+    ui->framePlaceholderLabel->setPixmap(QPixmap());
+    ui->framePlaceholderLabel->setText(QStringLiteral("Image selected. Press Start to preview."));
     controller->openImage(filePath);
 }
 
@@ -68,13 +69,15 @@ void MainWindow::onOpenVideoClicked()
     }
 
     ui->sourceValueLabel->setText(QStringLiteral("Video: %1").arg(filePath));
-    ui->framePlaceholderLabel->setText(QStringLiteral("Video source selected (stub)."));
-    statusBar()->showMessage(QStringLiteral("Video source selected (controller wiring pending)"), 4000);
+    ui->framePlaceholderLabel->setPixmap(QPixmap());
+    ui->framePlaceholderLabel->setText(QStringLiteral("Video selected. Press Start to preview."));
+    controller->openVideo(filePath);
 }
 
 void MainWindow::onOpenCameraClicked()
 {
     ui->sourceValueLabel->setText(QStringLiteral("Camera: default"));
+    ui->framePlaceholderLabel->setPixmap(QPixmap());
     ui->framePlaceholderLabel->setText(QStringLiteral("Camera source selected (stub)."));
     statusBar()->showMessage(QStringLiteral("Camera source selected (controller wiring pending)"), 4000);
 }
@@ -98,9 +101,10 @@ void MainWindow::onLoadModelClicked()
 
 void MainWindow::onStartClicked()
 {
+    controller->start();
     updateUiState(true);
     setRuntimeState(QStringLiteral("Running"), QStringLiteral("#198754"));
-    ui->statusValueLabel->setText(QStringLiteral("Running detection loop (stub)"));
+    ui->statusValueLabel->setText(QStringLiteral("Preview running"));
     statusBar()->showMessage(QStringLiteral("Started"), 3000);
 }
 
@@ -110,6 +114,7 @@ void MainWindow::onStopClicked()
     updateUiState(false);
     setRuntimeState(QStringLiteral("Stopped"), QStringLiteral("#dc3545"));
     ui->statusValueLabel->setText(QStringLiteral("Stopped"));
+    ui->framePlaceholderLabel->setPixmap(QPixmap());
     ui->framePlaceholderLabel->setText(QStringLiteral("Preview stopped. Select a source and press Start."));
 }
 
@@ -157,6 +162,22 @@ void MainWindow::setupConnections()
     connect(controller, &DetectionController::statusChanged, this, [this](const QString &status) {
         ui->statusValueLabel->setText(status);
         statusBar()->showMessage(status, 3000);
+    });
+
+    connect(controller, &DetectionController::frameReady, this, [this](const QImage &frame) {
+        if (frame.isNull()) {
+            return;
+        }
+
+        ui->framePlaceholderLabel->setText(QString());
+        const QPixmap pixmap = QPixmap::fromImage(frame).scaled(
+            ui->framePlaceholderLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        ui->framePlaceholderLabel->setPixmap(pixmap);
+    });
+
+    connect(controller, &DetectionController::statsReady, this, [this](double fps, int detections) {
+        ui->fpsValueLabel->setText(QString::number(fps, 'f', 1));
+        ui->detectionsValueLabel->setText(QString::number(detections));
     });
 }
 
