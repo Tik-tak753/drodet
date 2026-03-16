@@ -9,6 +9,9 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+class DetectionController;
+class QLabel;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,7 +20,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void onOpenImageRequested();
+    void displayFrame(const QImage &frame);
+
 private:
     Ui::MainWindow *ui;
+    DetectionController *controller;
+    QLabel *imageLabel;
 };
 #endif // MAINWINDOW_H

@@ -9,11 +9,20 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    controller/detectioncontroller.cpp \
+    detection/yolodetector.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    sources/imagesource.cpp
 
 HEADERS += \
-    mainwindow.h
+    controller/detectioncontroller.h \
+    detection/detectionresult.h \
+    detection/yolodetector.h \
+    mainwindow.h \
+    sources/iframesource.h \
+    sources/imagesource.h \
+    utils/frameprocessor.h
 
 FORMS += \
     mainwindow.ui
