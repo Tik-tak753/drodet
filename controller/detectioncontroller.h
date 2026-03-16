@@ -16,6 +16,7 @@ class DetectionController : public QObject
 
 public:
     explicit DetectionController(QObject *parent = nullptr);
+    ~DetectionController() override;
 
 public slots:
     void loadModel(const QString &path);
